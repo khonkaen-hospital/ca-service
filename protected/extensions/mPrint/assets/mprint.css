@@ -1,4 +1,4 @@
-.grid-view
+/*.grid-view
 {
     border-collapse: collapse;
     border-spacing: 0px;
@@ -15,6 +15,35 @@
 .grid-view th
 {
     text-align: right;
-    /*width: 160px;*/
+    //width: 160px;
     font-size: .8em;
-}
+}*/
+
+
+  body {
+            font-family: verdana ;
+            font-size: 14px ;
+            }
+
+        h1 {
+            font-size: 180% ;
+            }
+
+        h2 {
+            border-bottom: 1px solid #999999 ;
+            }
+
+        .printable {
+            border: 1px dotted #CCCCCC ;
+            padding: 10px 10px 10px 10px ;
+            }
+
+        img {
+            background-color: #E0E0E0 ;
+            border: 1px solid #666666 ;
+            padding: 5px 5px 5px 5px ;
+            }
+
+        a {
+            color: red ;
+            }

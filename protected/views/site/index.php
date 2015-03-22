@@ -189,7 +189,7 @@ $this->breadcrumbs = array(
         <!-- PRODUCT LIST -->
         <div class="box box-primary">
             <div class="box-header with-border">
-                <h3 class="box-title">ผู้ป่วยทำหัตถการล่าสุด</h3>
+                <h3 class="box-title">ผู้ป่วยที่ลงทะเบียนล่าสุด</h3>
                 <div class="box-tools pull-right">
                     <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
                     <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
@@ -206,9 +206,9 @@ $this->breadcrumbs = array(
                     array('name' => 'rn', 'header' => 'RN'),
                     array('name' => 'vn', 'header' => 'VN'),
                     array(
-                        'name' => 'date_in',
-                        'header' => 'DATE IN',
-                        'value' => 'CanRegis::setDateTh(Yii::app()->dateFormatter->formatDateTime($data["date_in"] ,"medium",False))',
+                        'name' => 'create_date',
+                        'header' => 'วันที่ลงทะเบียน',
+                        'value' => 'CanRegis::setDateTh(Yii::app()->dateFormatter->formatDateTime($data["create_date"] ,"medium",False))',
                     ),
                 );
                 ?>

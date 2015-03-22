@@ -29,11 +29,13 @@ class SiteController extends Controller {
     public function actionIndex() {
         // renders the view file 'protected/views/site/index.php'
         // using the default layout 'protected/views/layouts/main.php'
-        $sql = 'select * from cancer_visit GROUP BY vn';
+        $sql = 'select * from cancer_visit GROUP BY vn ORDER BY create_date DESC';
         $sql2 = 'select b.op_name,a.code_rtx,count(a.code_rtx) as counts
                 from cancer_lib_rtx a
                 left join lib_rx_ca b on a.code_rtx = b.code_rtx
-                group by a.code_rtx,b.op_name';
+                group by a.code_rtx,b.op_name 
+                
+                ';
 
         $sql3 = 'SELECT count(code_rtx) AS crx FROM cancer_lib_rtx WHERE date(create_date) = CURDATE()';
         $sql4 = 'SELECT count(code_rtx) AS crx  FROM cancer_lib_rtx WHERE  MONTH(create_date) = MONTH(NOW())';

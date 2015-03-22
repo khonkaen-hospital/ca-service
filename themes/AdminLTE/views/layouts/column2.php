@@ -24,7 +24,7 @@
             </li>
             <li><a href="<?php echo Yii::app()->createUrl('/canVisit/createVisit/');?>"><i class="fa fa-plus"></i> ลงทะเบียน / บันทึกหัตการ</a></li>
             <li><a href="<?php echo Yii::app()->createUrl('/canVisit/admin/');?>"><i class="fa fa-list"></i> รายการผู้ป่วยรับหัตถการ</a></li>
-            <li><a href="<?php echo Yii::app()->createUrl('/canVisit/ListCanRegis/');?>"><i class="fa fa-list"></i> รายชื่อผู้ป่วงลงทะเบียน</a></li>
+            <li><a href="<?php echo Yii::app()->createUrl('/canVisit/ListCanRegis/');?>"><i class="fa fa-list"></i> รายชื่อผู้ป่วยลงทะเบียน</a></li>
 
             <li class="header">SETTING</li>
             <li><a href="#"><i class="fa fa-circle-o text-danger"></i> เพิ่ม / แก้ไขหัตถการ</a></li>

@@ -18,11 +18,11 @@ $this->breadcrumbs = array(
             'dataProvider' => $dataProvider,
             'summaryText' => 'Display {start} - {end} of {count} ',
             'columns' => array(
-//        array(
-//            'header' => 'No',
-//            'value' => '$row+1+($this->grid->dataProvider->pagination->currentPage
-//                                        * $this->grid->dataProvider->pagination->pageSize)'
-//        ),
+        array(
+            'header' => 'No',
+            'value' => '$row+1+($this->grid->dataProvider->pagination->currentPage
+                                        * $this->grid->dataProvider->pagination->pageSize)'
+        ),
                 array(
                     'header' => 'HN',
                     'value' => '$data["hn"]',

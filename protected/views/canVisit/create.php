@@ -13,9 +13,11 @@ $this->breadcrumbs = array(
     </div><!-- /.box-header -->
     <div class="box-body">
         <?php
-        echo $this->renderPartial('_form', array('model' => $model,
+        echo $this->renderPartial('_form', array('model' => $model, 'fullName' => null,
             'dataProvider' => $dataProvider,
-            'gridDataProvider' => $gridDataProvider));
+            'gridDataProvider' => $gridDataProvider,
+            'gridDataProvider_ca_nurse' => $gridDataProvider_ca_nurse
+            ));
         ?>
     </div>
 </div>

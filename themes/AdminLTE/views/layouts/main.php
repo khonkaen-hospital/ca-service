@@ -40,7 +40,7 @@
 
             <header class="main-header">
                 <!-- Logo -->
-                <a href="index2.html" class="logo"><b>KKH</b> CANCER</a>
+                <a href="index2.html" class="logo"><b>CA-SERVICE</b> KKH</a>
                 <!-- Header Navbar: style can be found in header.less -->
                 <nav class="navbar navbar-static-top" role="navigation">
                     <!-- Sidebar toggle button-->
@@ -115,9 +115,9 @@
         <!-- jQuery UI 1.11.2 -->
         <!--<script src="http://code.jquery.com/ui/1.11.2/jquery-ui.min.js" type="text/javascript"></script>-->
         <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
-        <script>
+<!--        <script>
             $.widget.bridge('uibutton', $.ui.button);
-        </script>
+        </script>-->
         <!-- Bootstrap 3.3.2 JS -->
         <!--<script src="<?php //echo Yii::app()->theme->baseUrl; ?>/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>-->    
         <!-- Morris.js charts -->

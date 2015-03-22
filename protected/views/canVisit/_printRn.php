@@ -6,7 +6,7 @@ $data = $dataProvider->getData();
     <table>
         <tbody style="margin: 5em; font-size: 20px;">
             <tr>
-                <td><?php echo 'HN: ' . $data['hn'] ." / ". 'RN: ' . $data['rn']; ?></td>
+                <td><?php echo 'HN: ' . $data['hn'] ." / " . $data['rn']; ?></td>
             </tr>
             <tr>
                 <td><?php echo 'ชื่อ: ' . $data['new_title'] . " " . $data['name'] ." ". $data['surname']?></td>

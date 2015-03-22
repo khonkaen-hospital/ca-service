@@ -48,23 +48,40 @@ class CanVisitController extends Controller {
      * @param string $id the ID of the model to be displayed
      */
     public function actionView($id) {
-        $strSql = 'select a.id,a.rn,a.code_rtx,b.op_name,a.price,a.user_id,a.qty
+        $strSql = 'select a.id,a.rn, p.title, p.name, p.surname, p.age, p.address ,a.code_rtx,b.op_name,a.price,a.user_id,a.qty
                     from cancer_lib_rtx a
+                    LEFT JOIN cancer_regis c on a.rn = c.rn 
+                    LEFT JOIN patient p on c.hn = p.hn
                     inner join lib_rx_ca b on a.code_rtx = b.code_rtx
                     where a.visit_id = "' . $id . '"';
+
+
+        $patient = 'select c.hn, v.an, v.create_date, v.doc_id, v.user_id, a.id, a.rn, v.vn, p.title, v.date_in, p.name, p.surname, p.age, p.address ,a.code_rtx,b.op_name,a.price,a.user_id,a.qty
+                    from cancer_lib_rtx a
+                    LEFT JOIN cancer_regis c on a.rn = c.rn
+                    LEFT JOIN cancer_visit v on a.rn = v.rn
+                    LEFT JOIN patient p on c.hn = p.hn
+                    inner join lib_rx_ca b on a.code_rtx = b.code_rtx
+                    where a.visit_id = "' . $id . '"
+                    ORDER BY v.id DESC
+		    LIMIT 1';
+
 
         $rawData = Yii::app()->dbkkh->createCommand($strSql)->queryAll();
 
         $gridDataProvider = new CArrayDataProvider($rawData, array('keyField' => 'id', 'pagination' => array(
                 'pageSize' => 20)));
-        
-        
+
+        $dataPatient = Yii::app()->dbkkh->createCommand($patient)->queryRow();
+
         $model = CanVisit::model()->findByAttributes(array('id' => $id));
         if ($model === null) {
             throw new CHttpException(404, 'The requested page does not exist.');
         }
         $this->render('view', array(
-            'model' => $model, 'data_rx' => $gridDataProvider
+            'model' => $model,
+            'data_rx' => $gridDataProvider,
+            'dataPatient' => $dataPatient
         ));
     }
 
@@ -79,7 +96,7 @@ class CanVisitController extends Controller {
         $date = date('Y') + 543;
         $command = Patient::model()->findAllByPk(0);
         $rn = '';
-        $uid = Yii::app()->user->name;
+        $uid = Yii::app()->user->id;
 
         if (isset($_POST['txtHn']) && isset($_POST['txtRn'])) {
 
@@ -111,6 +128,7 @@ class CanVisitController extends Controller {
                     $model->rn = $_POST['txtRn'];
                     $model->hn = $_POST['txtHn'];
                     $model->vn = $_POST['txtVn'];
+                    $model->an = $_POST['txtAn'];
                     $model->date_in = $_POST['txtDateIn'];
                     $model->no_ptt = $_POST['txtNoPtt'];
                     $model->pttype = $_POST['txtPttType'];
@@ -119,6 +137,7 @@ class CanVisitController extends Controller {
                     $model->status = 1;
 
                     if ($model->save()) {
+
                         $sqlcommand = 'insert into cancer_lib_rtx(rn,code_rtx,price,create_date,user_id,visit_id,qty)values';
                         for ($i = 0; $i < count($_POST['ids']); $i++) {
                             list($codertx, $price) = explode(':', $_POST['ids'][$i]);
@@ -128,6 +147,42 @@ class CanVisitController extends Controller {
                             $sqlcommand .= $i == count($_POST['ids']) - 1 ? ';' : ',';
                         }
                         Yii::app()->dbkkh->createCommand($sqlcommand)->execute();
+
+                        //ถ้ามี An ให้บันทึกไปที่ ipd_rx
+                        if (isset($_POST['txtAn']) && $_POST['txtAn'] != null) {
+
+                            $an = $_POST['txtAn'];
+                            $seq = 0;
+                            $date = date('Y-m-d');
+                            $sql_ipd_rx = 'insert into ipd_rx(an, seq, date, item ,price, item_use, nurse, cgd)values';
+                            for ($i = 0; $i < count($_POST['ids']); $i++) {
+                                list($codertx, $price) = explode(':', $_POST['ids'][$i]);
+                                $lib_rx = LibRx::model()->findByPk($codertx);
+                                $qty = $_POST['txtQty'][$codertx];
+                                $price *= $qty;
+                                $sql_ipd_rx .= '("' . $an . '", '.$seq.', "'.$date.'", "' . $codertx . '",' . $price . ', ' . $qty . ', "' . $uid . '", "' . $lib_rx->nhso . '")';
+                                $sql_ipd_rx .= $i == count($_POST['ids']) - 1 ? ';' : ',';
+                            }
+                            Yii::app()->dbkkh->createCommand($sql_ipd_rx)->execute();
+                        }
+                        //ถ้าไม่มีบันทึกใน opd_rx
+                        if ($_POST['txtVn'] != null && $_POST['txtAn'] == null) {
+                            $vn = $_POST['txtVn'];
+                            $seq = 0;
+                            $date = date('Y-m-d');
+                            $sql_opd_rx = 'INSERT INTO opd_rx(hn, vn, seq, date, item, no,  paytype, price, cgd)values';
+                            for ($i = 0; $i < count($_POST['ids']); $i++) {
+                                list($codertx, $price) = explode(':', $_POST['ids'][$i]);
+
+                                $lib_rx = LibRx::model()->findByPk($codertx);
+                                $qty = $_POST['txtQty'][$codertx];
+                                $price *= $qty;
+                                $sql_opd_rx .= '("'.$model->hn.'", "' . $vn . '", '.$seq.', "'.$date.'", "' . $codertx . '", ' . $qty . ', ' . $lib_rx->paytype . ', ' . $price . ', "' . $lib_rx->nhso . '")';
+                                $sql_opd_rx .= $i == count($_POST['ids']) - 1 ? ';' : ',';
+                            }
+                            Yii::app()->dbkkh->createCommand($sql_opd_rx)->execute();
+                        }
+
                         $this->redirect(array('view', 'id' => $model->id));
                     }
                 } else {
@@ -153,15 +208,30 @@ class CanVisitController extends Controller {
                 inner join lib_rx_ca b on a.group_rtx = b.code_rtx
                 where a.group_rtx is not null
                 order by a.group_rtx,a.code_rtx asc';
+        
+        $sql_ca_nurse = 'select a.code as code_rtx,
+                a.cgd as nhso,
+                a.name,
+                a.cost as price,
+                "" as chk
+                from lib_rx_code_opd a 
+                ';
+        
         $rawData = Yii::app()->dbkkh->createCommand($sql1)->queryAll();
+        
+        $raw_ca_nurse = Yii::app()->dbkkh->createCommand($sql_ca_nurse)->queryAll();;
 
         $gridDataProvider = new CArrayDataProvider($rawData, array('keyField' => 'code_rtx', 'pagination' => array(
                 'pageSize' => 20)));
+        
+        $gridDataProvider_ca_nurse = new CArrayDataProvider($raw_ca_nurse, array('keyField' => 'code_rtx', 'pagination' => array(
+                'pageSize' => 100)));
 
         $this->render('create', array(
             'model' => $model,
             'dataProvider' => $dataProvider,
-            'gridDataProvider' => $gridDataProvider
+            'gridDataProvider' => $gridDataProvider,
+            'gridDataProvider_ca_nurse' => $gridDataProvider_ca_nurse
         ));
     }
 
@@ -252,11 +322,6 @@ class CanVisitController extends Controller {
                     $this->redirect(array('canVisit/listCanRegis'));
                 }
             }
-//            else if (!empty($check_rn->hn)) {
-//
-//                Yii::app()->user->setFlash('success','เกิดข้อผิดพลาด!! '. "HN: " . $check_rn->hn . "มีการลงทะเบียนไว้แล้ว หรือ คุณยังไม่เลือกหัตถการ");
-//                $this->redirect(array('create'));
-//            }
         }
 
         if (isset($_GET['hn']) && $_GET['hn'] != null) {
@@ -277,15 +342,35 @@ class CanVisitController extends Controller {
                 inner join lib_rx_ca b on a.group_rtx = b.code_rtx
                 where a.group_rtx is not null
                 order by a.group_rtx,a.code_rtx asc';
+
+
+        $sql_nurse = 'select a.code_rtx,
+                b.op_name as gname,
+                a.group_rtx,
+                a.op_name,
+                a.nhso,
+                a.price,
+                "" as chk
+                from lib_rx_ca a 
+                inner join lib_rx_ca b on a.group_rtx = b.code_rtx
+                where a.group_rtx is not null
+                order by a.group_rtx,a.code_rtx asc';
+
         $rawData = Yii::app()->dbkkh->createCommand($sql1)->queryAll();
+        $rawData_nurse = Yii::app()->dbkkh->createCommand($sql_nurse)->queryAll();
 
         $gridDataProvider = new CArrayDataProvider($rawData, array('keyField' => 'code_rtx', 'pagination' => array(
+                'pageSize' => 20)));
+
+        $gridDataProvider_nurse = new CArrayDataProvider($rawData_nurse, array('keyField' => 'code_rtx', 'pagination' => array(
                 'pageSize' => 20)));
 
         $this->render('create', array(
             'model' => $model,
             'dataProvider' => $dataProvider,
-            'gridDataProvider' => $gridDataProvider
+            'gridDataProvider' => $gridDataProvider,
+            'gridDataProvider_nurse' => $gridDataProvider_nurse,
+            'fullName' => null,
         ));
     }
 
@@ -416,7 +501,7 @@ class CanVisitController extends Controller {
         $this->render('update', array(
             'model' => $model,
             'dataProvider' => $dataProvider,
-            'gridDataProvider' => $gridDataProvider
+            'gridDataProvider' => $gridDataProvider,
         ));
     }
 

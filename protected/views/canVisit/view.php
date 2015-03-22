@@ -8,98 +8,107 @@ $this->breadcrumbs = array(
 );
 ?>
 
-<?php
-/* @var $this CanVisitController */
-/* @var $model CanVisit */
-
-$this->setPageTitle("ข้อมูลการรักษา รหัส. $model->rn");
-?>
 <div class="box">
     <div class="box-header">
-        <h3 class="box-title">ข้อมูลการรักษา รหัส <?php echo $model->rn; ?></h3>
+        <h3 class="box-title">รายละเอียด <?php echo $model->rn ?></h3>
     </div><!-- /.box-header -->
     <div class="box-body">
-        <div class="row">
-            <div class=" col-lg-12 col-sm-12 col-sx-12" style="text-align: right;">
-                <?php
-                $this->widget('ext.mPrint.mPrint', array(
-                    'id' => 'resultprintid',
-                    'title' => '', //the title of the document. Defaults to the HTML title
-                    'tooltip' => 'User Result', //tooltip message of the print icon. Defaults to 'print'
-                    'text' => '<font color="#000000">พิมพ์เอกสาร</font>', //text which will appear beside the print icon. Defaults to NULL
-                    'element' => '#resultprint', //the element to be printed.
-                    'exceptions' => array(//the element/s which will be ignored
-                        '.summary',
-                        '.search-form'
-                    ),
-                    'publishCss' => true, //publish the CSS for the whole page?
-                        //'style'=>'float: right; padding: 5px; margin-top: -5px;'                       
-                ));
-                ?>
-            </div>
-        </div>
-        <div class="row">
-            <div class=" col-lg-12 col-sm-12 col-sx-12" id="resultprint" style="text-align: right;">
-                <?php
-                $this->widget('booster.widgets.TbDetailView', array(
-                    'data' => $model,
-                    'attributes' => array(
-                        array('name' => 'rn', 'label' => 'RN'),
-                        array('name' => 'hn', 'label' => 'HN'),
-                        array('name' => 'vn', 'label' => 'VN'),
-                        array('label' => 'วันที่วันที่รับบริการ', 'value' => CanRegis::setDateTh(Yii::app()->dateFormatter->formatDateTime($model->date_in, "medium", False))),
-                        
-                        array('label' => 'วันที่บันทึก', 'value' => CanRegis::setDateTh(Yii::app()->dateFormatter->formatDateTime($model->create_date, "medium", False))),
-                        'user_id',
-                        array('name' => 'doc_id', 'label' => 'เลขที่เบิก'),
-                    ),
-                        )
-                );
+        <!-- Main content -->
+        <section class="invoice">
+            <div style="text-align: right;">
+                <h5>
+                    <?php
+                    $this->widget('application.extensions.print.printWidget', array(
+                        'cssFile' => 'print.css',
+                        'coverElement' => '#wrapper',
+                        'printedElement' => '#wrapper', //element to be printed
+                        //'printedElement' => '#page',
+                        'title' => '',
+                    ));
+                    ?> 
 
-                $this->widget('booster.widgets.TbExtendedGridView', array(
-                    'type' => 'striped bordered condensed',
-                    'dataProvider' => $data_rx,
-                    'template' => "{items}\n{extendedSummary}",
-                    'columns' => array(
-                        array(
-                            'header' => 'No',
-                            'value' => '$this->grid->dataProvider->pagination->currentPage*$this->grid->dataProvider->pagination->pageSize + $row+1',
-                        ),
-                        array(
-                            'header' => "RN",
-                            'name' => 'rn'
-                        ),
-                        array(
-                            'header' => 'Code RTX',
-                            'name' => 'code_rtx'
-                        ),
-                        array(
-                            'header' => 'หัตถการ',
-                            'name' => 'op_name'
-                        ),
-                        array(
-                            'header' => 'จำนวน',
-                            'name' => 'qty'
-                        ),
-                        array(
-                            'header' => 'ราคา',
-                            'name' => 'price',
-                        )
-                    ),
-                    'extendedSummary' => array(
-                        'title' => 'ค่าใช้จ่ายรวม',
-                        'columns' => array(
-                            'price' => array('label' => 'สุทธิ(บาท)', 'class' => 'TbSumOperation')
-                        )
-                    ),
-                    'extendedSummaryOptions' => array(
-                        'class' => 'well pull-right',
-                        'style' => 'width:200px',
-                        'type' => 'number',
-                    ),
-                ));
-                ?>
+                    พิมพ์เอกสาร</h5>
             </div>
+        </section>
+        <div id="wrapper">
+            <section class="invoice">
+                <!-- title row -->
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h2 class="page-header">
+                            <i class="fa fa-globe"></i> Khon Kaen Hospital
+                            <small class="pull-right"><?php echo date("d-m-Y"); ?></small>
+                        </h2>
+                    </div><!-- /.col -->
+                </div>
+                <!-- info row -->
+                <div class="row invoice-info">
+                    <div class="col-sm-4 invoice-col">
+                        <address>
+                            <h5><?php echo "ชื่อ-นามสกุล: " . $dataPatient['title'] . $dataPatient['name'] . " " . $dataPatient['surname'] ?></h5>
+                            <h5><?php echo "HN: " . $dataPatient['hn'] ?></h5>
+                            <h5><?php echo "RN: " . $dataPatient['rn'] ?></h5>
+                            <h5><?php echo "VN: " . $dataPatient['vn'] ?></h5>
+                            <h5><?php //echo "AN: " . $dataPatient['an'] != null ? $dataPatient['an'] : ""  ?></h5>
+
+                        </address>
+                    </div><!-- /.col -->
+                    <div class="col-sm-4 invoice-col">
+
+                    </div><!-- /.col -->
+                    <div class="col-sm-4 invoice-col">
+                        <h5><?php echo "รับบริการ: " . CanRegis::setDateTh(Yii::app()->dateFormatter->formatDateTime($dataPatient["date_in"], "long", False)); ?></h5>
+                        <h5><?php echo "บันทึกเมื่อ: " . CanRegis::setDateTh(Yii::app()->dateFormatter->formatDateTime($dataPatient["create_date"], "long", False)); ?></h5>
+                        <h5><?php echo "เลที่เบิก: " . $dataPatient['doc_id']; ?></h5>
+                        <h5><?php echo "ผู้บันทึกข้อมูล: " . $dataPatient['user_id']; ?></h5>
+                    </div><!-- /.col -->
+                </div><!-- /.row -->
+
+                <!-- Table row -->
+                <div class="row">
+                    <div class="col-xs-12 table-responsive">
+                        <?php
+                        $this->widget('booster.widgets.TbExtendedGridView', array(
+                            'type' => 'striped bordered condensed',
+                            'dataProvider' => $data_rx,
+                            'template' => "{items}\n{extendedSummary}",
+                            'columns' => array(
+                                array(
+                                    'header' => 'No',
+                                    'value' => '$this->grid->dataProvider->pagination->currentPage*$this->grid->dataProvider->pagination->pageSize + $row+1',
+                                ),
+                                array(
+                                    'header' => 'รหัส',
+                                    'name' => 'code_rtx'
+                                ),
+                                array(
+                                    'header' => 'หัตถการ',
+                                    'name' => 'op_name'
+                                ),
+                                array(
+                                    'header' => 'จำนวน',
+                                    'name' => 'qty'
+                                ),
+                                array(
+                                    'header' => 'ราคา',
+                                    'name' => 'price',
+                                )
+                            ),
+                            'extendedSummary' => array(
+                                'title' => 'ค่าใช้จ่ายรวม',
+                                'columns' => array(
+                                    'price' => array('label' => 'สุทธิ(บาท)', 'class' => 'TbSumOperation')
+                                )
+                            ),
+                            'extendedSummaryOptions' => array(
+                                'class' => 'well pull-right',
+                                'style' => 'width:300px; margin-top: 5px;'
+                            ),
+                        ));
+                        ?>
+                    </div><!-- /.col -->
+                </div><!-- /.row -->  
+            </section>
         </div>
     </div>
 </div>
